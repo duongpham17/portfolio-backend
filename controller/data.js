@@ -23,46 +23,9 @@ exports.getCoinGeckoPrice = catchAsync(async(req, res, next) => {
     });
 });
 
-exports.getErgoNews = catchAsync(async(req, res, next) => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto('https://ergoplatform.org/en/');
-
-    const data = await page.evaluate(() => {
-        const news = document.querySelectorAll('.news-section__item');
-
-        let newsArray = [];
-
-        news.forEach((el) => {
-            const className = (c, index) => el.querySelectorAll(c)[index].innerText;
-
-            const date = className('h3', 0);
-            const title = className('a', 0);
-            const description = className('a', 1);
-            const link = el.querySelectorAll('a')[0].href;
-
-            newsArray.push({
-                date,
-                title,
-                link,
-                description,
-            })
-        })
-
-        return newsArray
-    });
-
-    await browser.close();
-
-    res.status(200).json({
-        status: "success",
-        data
-    })
-});
-
 exports.getCardanoNews = catchAsync(async(req, res, next) => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+    const browser = await puppeteer.launch({headless: true});
+    const page = (await browser.pages())[0];
     await page.goto('https://iohk.io/en/blog/posts/2021/10/page-1/');
 
     const data = await page.evaluate(() => {
@@ -99,4 +62,42 @@ exports.getCardanoNews = catchAsync(async(req, res, next) => {
         data
     })
 
+});
+
+
+exports.getErgoNews = catchAsync(async(req, res, next) => {
+    const browser = await puppeteer.launch({headless: true});
+    const page = (await browser.pages())[0];
+    await page.goto('https://ergoplatform.org/en/');
+
+    const data = await page.evaluate(() => {
+        const news = document.querySelectorAll('.news-section__item');
+
+        let newsArray = [];
+
+        news.forEach((el) => {
+            const className = (c, index) => el.querySelectorAll(c)[index].innerText;
+
+            const date = className('h3', 0);
+            const title = className('a', 0);
+            const description = className('a', 1);
+            const link = el.querySelectorAll('a')[0].href;
+
+            newsArray.push({
+                date,
+                title,
+                link,
+                description,
+            })
+        })
+
+        return newsArray
+    });
+
+    await browser.close();
+
+    res.status(200).json({
+        status: "success",
+        data
+    })
 });
