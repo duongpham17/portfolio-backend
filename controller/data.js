@@ -24,7 +24,10 @@ exports.getCoinGeckoPrice = catchAsync(async(req, res, next) => {
 });
 
 exports.getCardanoNews = catchAsync(async(req, res, next) => {
-    const browser = await puppeteer.launch({headless: true});
+    const browser = await puppeteer.launch({headless: true, args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+      ],});
     const page = (await browser.pages())[0];
     await page.goto('https://iohk.io/en/blog/posts/2021/10/page-1/');
 
@@ -64,9 +67,11 @@ exports.getCardanoNews = catchAsync(async(req, res, next) => {
 
 });
 
-
 exports.getErgoNews = catchAsync(async(req, res, next) => {
-    const browser = await puppeteer.launch({headless: true});
+    const browser = await puppeteer.launch({headless: true, args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+      ],});
     const page = (await browser.pages())[0];
     await page.goto('https://ergoplatform.org/en/');
 
