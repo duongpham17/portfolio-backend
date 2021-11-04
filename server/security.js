@@ -13,4 +13,5 @@ module.exports = (app) => {
     app.use(mongoSanitize());
 
     app.use(xss());
+    
 }
