@@ -4,14 +4,23 @@ const {catchAsync} = require('../utils/CatchError');
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
-exports.getCoinGeckoPrice = catchAsync(async(req, res, next) => {
+const searchCoinGecko = async (name) => {
 
-    const crypto_price = {};
+    const coins = await CoinGeckoClient.coins.list();
+
+    const results = coins.data.filter(coin => coin.id.includes(name));
+
+    console.log(results);
+}
+
+exports.getCoinGeckoPrice = catchAsync(async(req, res, next) => {
 
     const price = await CoinGeckoClient.coins.markets({
         vs_currency: "gbp",
-        ids:[ "bitcoin", "cardano", "ergo", "binancecoin", "vechain", "crypto-com-chain"]
+        ids:[ "bitcoin", "cardano", "ergo", "binancecoin", "vechain", "crypto-com-chain", "coti", "pancakeswap-token"]
     });
+
+    const crypto_price = {};
     
     price.data.forEach(el => {
         crypto_price[el.symbol] = Number(el.current_price)
@@ -19,7 +28,7 @@ exports.getCoinGeckoPrice = catchAsync(async(req, res, next) => {
 
     res.status(200).json({
         status: "success",
-        data: crypto_price
+        price: crypto_price,
     });
 });
 
